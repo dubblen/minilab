@@ -5,14 +5,6 @@
 - wireshark
 - whiptail
 
-**Deploy:**
-```bash
-docker compose up -d
-```
-
-- `attach.sh` - připojení na shell zvoleného zařízení
-- `wireshark.sh` - spuštění wiresharku a sledování síťového provozu zařízení
-
 
 ## 1. Topologie
 
@@ -37,12 +29,17 @@ docker compose up -d
 docker ps
 ```
 
+### Skripty
+- `attach.sh` - připojení na shell zvoleného zařízení
+- `wireshark.sh` - spuštění wiresharku a sledování síťového provozu zařízení
+
 ### Ověření základní konektivity
 
 **Z kontejneru client:**
 ```bash
 ping -c2 10.10.0.2
 ```
+
 **Očekávaný výstup:**
 ```
 PING 10.10.0.2 (10.10.0.2): 56 data bytes
@@ -54,6 +51,7 @@ PING 10.10.0.2 (10.10.0.2): 56 data bytes
 ```bash
 ping -c2 10.20.0.3
 ```
+
 **Očekávaný výstup:**
 ```
 64 bytes from 10.20.0.3: icmp_seq=1 ttl=64 time=0.1 ms
@@ -64,7 +62,7 @@ ping -c2 10.20.0.3
 
 ## 3. Tabulka FILTER – filtrování paketů
 
-### 🧩 Úkol 3.1 – Zablokování ICMP z jedné sítě do druhé
+### Úkol 3.1 – Zablokování ICMP z jedné sítě do druhé
 
 **Na routeru:**
 ```bash
@@ -75,6 +73,7 @@ iptables -A FORWARD -p icmp -s 10.10.0.0/24 -d 10.20.0.0/24 -j DROP
 ```bash
 ping -c2 10.20.0.3
 ```
+
 **Očekávaný výstup:**
 ```
 From 10.10.0.2 icmp_seq=1 Destination Host Prohibited
@@ -96,7 +95,7 @@ ping -c2 10.10.0.3
 
 ---
 
-### 🧩 Úkol 3.2 – Povolit ICMP jen v jednom směru
+### Úkol 3.2 – Povolit ICMP jen v jednom směru
 
 **Na routeru:**
 ```bash
@@ -182,7 +181,7 @@ dmesg | tail
 
 ## 4. Tabulka NAT – přepisování adres
 
-### 🧩 Úkol 4.1 – Masquerade
+### Úkol 4.1 – Masquerade
 
 **Na routeru:**
 ```bash
