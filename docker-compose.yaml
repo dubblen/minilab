@@ -1,0 +1,68 @@
+services:
+  router:
+    build: .
+    container_name: router
+    hostname: router
+    privileged: true
+    sysctls:
+      net.ipv4.ip_forward: 1
+    networks:
+      network_a:
+        ipv4_address: 10.10.0.2
+      network_b:
+        ipv4_address: 10.20.0.2
+    command: >
+      bash -c "
+      echo 1 > /proc/sys/net/ipv4/ip_forward &&
+      iptables -t nat -A POSTROUTING -o eth1 -j MASQUERADE &&
+      iptables -A FORWARD -i eth0 -o eth1 -j ACCEPT &&
+      iptables -A FORWARD -i eth1 -o eth0 -j ACCEPT &&
+      echo 'Router ready: 10.10.0.2 ↔ 10.20.0.2' &&
+      tail -f /dev/null
+      "
+
+  client:
+    build: .
+    container_name: client
+    hostname: client
+    privileged: true
+    networks:
+      network_a:
+        ipv4_address: 10.10.0.3
+    command: >
+      bash -c "
+      ip route del default || true &&
+      ip route add default via 10.10.0.2 &&
+      echo 'Client default gateway set to 10.10.0.2' &&
+      tail -f /dev/null
+      "
+
+  server:
+    build: .
+    container_name: server
+    hostname: server
+    privileged: true
+    networks:
+      network_b:
+        ipv4_address: 10.20.0.3
+    command: >
+      bash -c "
+      ip route del default || true &&
+      ip route add default via 10.20.0.2 &&
+      echo 'Server default gateway set to 10.20.0.2' &&
+      tail -f /dev/null
+      "
+
+networks:
+  network_a:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.0.0/24
+          gateway: 10.10.0.1
+  network_b:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.20.0.0/24
+          gateway: 10.20.0.1
