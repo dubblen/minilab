@@ -32,4 +32,4 @@ container=$(whiptail --title "Docker Attach" \
   --menu "Vyber kontejner:" \
   20 30 10 "${menu_items[@]}" 3>&2 2>&1 1>&3) || exit 1
 
-docker-compose exec -itw /root "$container" bash
+docker compose exec -itw /root "$container" bash
